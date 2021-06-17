@@ -157,8 +157,8 @@ public class Calculator extends Applet implements ActionListener {
 
                 case "Clear":
                     valueSum.setText("Cleared");
-                    valPre = 0.0;
-                    valFor = 0.0;
+                    valPre = null;
+                    valFor = null;
                     valResD = null;
                    // preResD = 0.0;
                     first = true;
