@@ -95,24 +95,32 @@ public class Calculator extends Applet implements ActionListener {
                 case "8":
                 case "9 ":
                 case "0":
-                    if (!lock && first) {
-                        valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
+
+                    if (!lock /*&& first*/) {
+                     //   valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
+
                         if(valPre!=null)
-                        valPre = ((valPre * 10) + Integer.parseInt(actionSource.getLabel()));
+                            valPre = ((valPre * 10) + Integer.parseInt(actionSource.getLabel()));
                         else
                             valPre=Double.parseDouble(actionSource.getLabel());
-                        valueSum.setText(Double.toString(valPre));
+
+                       // valueSum.setText(Double.toString(valPre));
                     }
 
                     if (lock) {
-                        valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
+                       // valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
+
                         if(valFor!=null)
-                        valFor = ((valFor * 10) + Integer.parseInt(actionSource.getLabel()));
+                            valFor = ((valFor * 10) + Integer.parseInt(actionSource.getLabel()));
                         else
                             valFor=Double.parseDouble(actionSource.getLabel());
-                        valueSum.setText(Double.toString(valFor));
+
+                      //  valueSum.setText(Double.toString(valFor));
                     }
-                    // express.setText("Res: " + valResD);
+                   if(eqLoc&&hold==null) { valFor=null; break; }
+                   else
+                        valueSum.setText(valueSum.getText()+actionSource.getLabel());
+
                 break;
 
                 case "+":
@@ -123,7 +131,8 @@ public class Calculator extends Applet implements ActionListener {
                     if(valPre==null) throw new Exception("No Data entered");
                     lock = true;
                     hold = actionSource.getLabel();
-                    valFor=0.0;
+                    valFor=null;
+                    valueSum.setText(valueSum.getText()+actionSource.getLabel());
                     break;
 
                 case "=":
@@ -152,7 +161,6 @@ public class Calculator extends Applet implements ActionListener {
                     valFor = 0.0;
                     valueSum.setText("Res: " + valResD);
                     hold=null;
-                    // express.setText(Double.toString(valResD));
                     break;
 
                 case "Clear":
