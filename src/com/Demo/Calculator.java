@@ -3,11 +3,12 @@ package com.Demo;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 //Calculator
 public class Calculator extends Applet implements ActionListener {
     TextField valueSum = new TextField();
-    TextField express = new TextField();
     //Buttons
     //Arithmetic Buttons
     Button buAdd = new Button("+");
@@ -40,37 +41,40 @@ public class Calculator extends Applet implements ActionListener {
         Button ok=new Button("OK");
         ok.setSize(20, 10);
         ok.addActionListener(err -> Calculator.dialog.setVisible(false));
-        dialog.add(new Label(catchError));
+        dialog.add(new Label(catchError.toUpperCase()));
         dialog.add(ok);
-        dialog.setSize(200,100);
+        Clear();
+        dialog.setSize(450,100);
         dialog.setVisible(true);
     }
     //Constructor
   public Calculator() { MainFrameWindows(); }
     public void MainFrameWindows() {
-        setLayout(new GridLayout(7, 3, 5, 5));
+       // Frame mainFrame =new Frame();
+        setLayout(new GridLayout(7, 3, 3, 3));
+
         setBackground(Color.gray);
-
-        for (int i = 0; i < buNum.length; i++)  buNum[i] = new Button("" + i + "");
-
-        add(express);
-        express.setVisible(false);
-        express.setEditable(false);
+        buNum[0]=new Button("0");
+        IntStream.range(1, buNum.length).forEach(i -> buNum[i] = new Button("" + i + ""));
 
         add(valueSum);
         valueSum.setEditable(false);
 
-        add(buEq);
+
         add(buAdd);
         add(buSub);
         add(buMul);
         add(buDiv);
         add(buRem);
-        for (Button button : buNum) add(button);
+        //Arrays.stream(buNum).forEach(this::add);
+        IntStream.range(1,buNum.length).forEach((i->add(buNum[i])));
         add(buClear);
+        add(buNum[0]);
+        add(buEq);
 
         //Action Listeners
-        for (Button button : buNum) button.addActionListener(this);
+        Arrays.stream(buNum).forEach(button -> button.addActionListener(this));
+        ///IntStream.range(1,buNum.length).forEach((i->add(buNum[i])));
         buAdd.addActionListener(this);
         buSub.addActionListener(this);
         buMul.addActionListener(this);
@@ -87,7 +91,7 @@ public class Calculator extends Applet implements ActionListener {
             switch (actionSource.getLabel()) {
                 case "1":case "2":case "3":
                 case "4":case "5":case "6":
-                case "7":case "8":case "9 ":
+                case "7":case "8":case "9":
                          case "0":
                     if (!lock) {
                         if(valPre!=null) valPre = ((valPre * 10) + Integer.parseInt(actionSource.getLabel()));
@@ -112,8 +116,15 @@ public class Calculator extends Applet implements ActionListener {
                 break;
 
                 case "=":
-                    if(valFor==null){ valueSum.setText(Double.toString(valResD)); break; }
+
+                    if(valFor==null){
+                        if(valResD!=null)
+                            valueSum.setText(Double.toString(valResD));
+                        break;
+                    }
+
                     CalRes();
+
                     valueSum.setText(valPre+"" + hold +""+valFor+"="+valResD);
                     valFor = null;
                     valPre = valResD;
@@ -123,18 +134,21 @@ public class Calculator extends Applet implements ActionListener {
                 break;
 
                 case "Clear":
-                    valueSum.setText(null);
-                    valPre = null;
-                    valFor = null;
-                    valResD =null;
-                    hold = null;
-                    lock = false;
-                    eqLoc = false;
-                    opLoc = false;
+                   Clear();
                     break;
-                default: throw new IllegalStateException("Wrong Option: " + actionSource.getLabel());
+                default: throw new IllegalStateException("Illegal Event: " + actionSource.getLabel());
             }
         } catch (Exception exp) { PopError("Error: "+ exp.getMessage()); }
+    }
+    public  void Clear(){
+        valueSum.setText(null);
+        valPre = null;
+        valFor = null;
+        valResD =null;
+        hold = null;
+        lock = false;
+        eqLoc = false;
+        opLoc = false;
     }
     public void CalRes() throws Exception{
         switch (hold) {
@@ -148,14 +162,14 @@ public class Calculator extends Applet implements ActionListener {
                 valResD = valPre * valFor;
                 break;
             case "/":
-                if (valFor == 0.0) throw new Exception("Cannot Divide by Zero");
+                if (valFor == 0.0) throw new Exception("Cannot divide by zero");
                 valResD = valPre / valFor;
                 break;
             case "%":
-                if (valFor == 0.0) throw new Exception("Cannot Get Remainder for Zero Denominator");
+                if (valFor == 0.0) throw new Exception("Cannot divide by zero");
                 valResD = valPre % valFor;
                 break;
-            default: throw new IllegalStateException("No Operator Selected");
+            default: throw new IllegalStateException("No operator selected");
         }
     }
 }
