@@ -34,7 +34,7 @@ public class Calculator extends Applet implements ActionListener {
 
     //Boolean Variables
     boolean lock = false;
-    boolean first = true;
+    boolean eqLoc = false;
 
 
     //Constructor
@@ -74,15 +74,14 @@ public class Calculator extends Applet implements ActionListener {
         buRem.addActionListener(this);
         buEq.addActionListener(this);
         buClear.addActionListener(this);
-
     }
 
     @Override
     //Input Action Events
     public void actionPerformed(ActionEvent num) {
         try {
-            if (!first)
-                valPre = valResD;
+
+
             Button actionSource = (Button) num.getSource();
             switch (actionSource.getLabel()) {
                 case "1":
@@ -136,51 +135,62 @@ public class Calculator extends Applet implements ActionListener {
                     break;
 
                 case "=":
-                    switch (hold) {
-                        case "+":
-                            valResD = valPre + valFor;
-                            break;
-                        case "-":
-                            valResD = valPre - valFor;
-                            break;
-                        case "*":
-                            valResD = valPre * valFor;
-                            break;
-                        case "/":
-                            if (valFor == 0.0) throw new Exception("Cannot Divide by Zero");
-                            valResD = valPre / valFor;
-                            break;
-                        case "%":
-                            if (valFor == 0.0) throw new Exception("Cannot Get Remainder for Zero Denominator");
-                            valResD = valPre % valFor;
-                            break;
-                        default:
-                            throw new IllegalStateException("No Operator Selected");
-                    }
-                    first = false;
-                    valFor = 0.0;
-                    valueSum.setText("Res: " + valResD);
+
+                        CalRes();
+                        valueSum.setText(valPre+" + "+valFor+"="+valResD);
+
+                    if(valFor==null||valResD==null||valPre==null) break;
+
+                    eqLoc= true;
+                    valFor = null;
+                    valPre = valResD;
                     hold=null;
                     break;
 
                 case "Clear":
-                    valueSum.setText("Cleared");
+                    valueSum.setText(null);
                     valPre = null;
                     valFor = null;
                     valResD = null;
                    // preResD = 0.0;
-                    first = true;
+                    eqLoc = false;
                     lock = false;
                     hold = null;
-                    express.setText("");
+                  //  express.setText("");
                     break;
                 default:
                     throw new IllegalStateException("Wrong Option: " + actionSource.getLabel());
             }
 
-        } catch (Exception exp) {
-            valueSum.setText("Error " + exp.getMessage());
-        }
+        } catch (Exception exp) { valueSum.setText("Error " + exp.getMessage()); }
+
+        /*if(valPre!=null&&valFor!=null)
+            try { CalRes(); }
+            catch (Exception cal) { valueSum.setText("Calculation Error: " + cal.getMessage()); }*/
                       //   temp.setText("ValPre: "+valFor+" ValFor:"+ valFor+ " preResD: "+preResD +"valResD: "+valResD);
+    }
+    public void CalRes() throws Exception{
+      if(hold==null)  throw new IllegalStateException("No Operator Selected");
+        switch (hold) {
+            case "+":
+                valResD = valPre + valFor;
+                break;
+            case "-":
+                valResD = valPre - valFor;
+                break;
+            case "*":
+                valResD = valPre * valFor;
+                break;
+            case "/":
+                if (valFor == 0.0) throw new Exception("Cannot Divide by Zero");
+                valResD = valPre / valFor;
+                break;
+            case "%":
+                if (valFor == 0.0) throw new Exception("Cannot Get Remainder for Zero Denominator");
+                valResD = valPre % valFor;
+                break;
+            default:
+                throw new IllegalStateException("No Operator Selected");
+        }
     }
 }
