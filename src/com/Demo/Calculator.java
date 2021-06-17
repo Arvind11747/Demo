@@ -9,6 +9,7 @@ public class Calculator extends Applet implements ActionListener {
 
     TextField valueSum = new TextField();
     TextField express = new TextField();
+
     //TextField temp= new TextField();
 
     //Buttons
@@ -31,12 +32,27 @@ public class Calculator extends Applet implements ActionListener {
     Double valResD =null;
     //Arithmetic Temp Hold
     String hold = null;
-
+//    String resHold=null;
     //Boolean Variables
     boolean lock = false;
     boolean eqLoc = false;
+    boolean opLoc = false;
+    boolean numLoc =false;
+    //Dialog Error
+    private static  Dialog pop ;
 
-
+    public void PopError(String catchError) {
+        Frame popper= new Frame();
+        pop= new Dialog(popper, "Calculator Error", true);
+        pop.setLayout(new GridLayout());
+        Button ok=new Button("OK");
+        ok.setSize(20, 10);
+        ok.addActionListener(err -> Calculator.pop.setVisible(false));
+        pop.add(new Label(catchError));
+        pop.add(ok);
+        pop.setSize(200,100);
+        pop.setVisible(true);
+    }
     //Constructor
   public Calculator() { MainFrameWindows(); }
 
@@ -49,11 +65,11 @@ public class Calculator extends Applet implements ActionListener {
             buNum[i] = new Button("" + i + "");
 
         add(express);
+        express.setVisible(false);
+        express.setEditable(false);
+
         add(valueSum);
         valueSum.setEditable(false);
-
-        express.setVisible(true);
-        express.setEditable(false);
 
         add(buEq);
         add(buAdd);
@@ -64,7 +80,7 @@ public class Calculator extends Applet implements ActionListener {
 
         for (Button button : buNum) add(button);
         add(buClear);
-
+        //pop.set
         //Action Listeners
         for (Button button : buNum) button.addActionListener(this);
         buAdd.addActionListener(this);
@@ -80,8 +96,6 @@ public class Calculator extends Applet implements ActionListener {
     //Input Action Events
     public void actionPerformed(ActionEvent num) {
         try {
-
-
             Button actionSource = (Button) num.getSource();
             switch (actionSource.getLabel()) {
                 case "1":
@@ -94,32 +108,27 @@ public class Calculator extends Applet implements ActionListener {
                 case "8":
                 case "9 ":
                 case "0":
-
-                    if (!lock /*&& first*/) {
-                     //   valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
-
+                    if (!lock) {
                         if(valPre!=null)
                             valPre = ((valPre * 10) + Integer.parseInt(actionSource.getLabel()));
                         else
                             valPre=Double.parseDouble(actionSource.getLabel());
-
-                       // valueSum.setText(Double.toString(valPre));
                     }
 
                     if (lock) {
-                       // valueSum.setText(/*valueSum.getText()+*/actionSource.getLabel());
-
                         if(valFor!=null)
                             valFor = ((valFor * 10) + Integer.parseInt(actionSource.getLabel()));
                         else
                             valFor=Double.parseDouble(actionSource.getLabel());
-
-                      //  valueSum.setText(Double.toString(valFor));
                     }
-                   if(eqLoc&&hold==null) { valFor=null; break; }
-                   else
-                        valueSum.setText(valueSum.getText()+actionSource.getLabel());
 
+                   if(eqLoc&&hold==null) {
+                       valFor=null;
+                       break;
+                   }
+                   else
+                       valueSum.setText(valueSum.getText()+actionSource.getLabel());
+                   numLoc=true;
                 break;
 
                 case "+":
@@ -128,49 +137,44 @@ public class Calculator extends Applet implements ActionListener {
                 case "/":
                 case "%":
                     if(valPre==null) throw new Exception("No Data entered");
-                    lock = true;
+                      if(opLoc) break;
+                      else valueSum.setText(valueSum.getText()+actionSource.getLabel());
                     hold = actionSource.getLabel();
                     valFor=null;
-                    valueSum.setText(valueSum.getText()+actionSource.getLabel());
-                    break;
-
+                    opLoc=true;
+                    lock = true;
+                break;
                 case "=":
-
-                        CalRes();
-                        valueSum.setText(valPre+" + "+valFor+"="+valResD);
-
-                    if(valFor==null||valResD==null||valPre==null) break;
-
-                    eqLoc= true;
+                    if(valFor==null){ valueSum.setText(Double.toString(valResD)); break; }
+                    CalRes();
+                    valueSum.setText(valPre+"" + hold +""+valFor+"="+valResD);
                     valFor = null;
                     valPre = valResD;
                     hold=null;
-                    break;
-
+                    eqLoc= true;
+                    opLoc=false;
+                    numLoc=false;
+                break;
                 case "Clear":
-                    valueSum.setText(null);
+                    // Double preResD = null;
                     valPre = null;
                     valFor = null;
-                    valResD = null;
-                   // preResD = 0.0;
-                    eqLoc = false;
-                    lock = false;
+                    valResD =null;
+                    //Arithmetic Temp Hold
                     hold = null;
-                  //  express.setText("");
+                    //Boolean Variables
+                    lock = false;
+                    eqLoc = false;
+                    opLoc = false;
+                    numLoc =false;
                     break;
-                default:
-                    throw new IllegalStateException("Wrong Option: " + actionSource.getLabel());
+                default: throw new IllegalStateException("Wrong Option: " + actionSource.getLabel());
             }
-
-        } catch (Exception exp) { valueSum.setText("Error " + exp.getMessage()); }
-
-        /*if(valPre!=null&&valFor!=null)
-            try { CalRes(); }
-            catch (Exception cal) { valueSum.setText("Calculation Error: " + cal.getMessage()); }*/
-                      //   temp.setText("ValPre: "+valFor+" ValFor:"+ valFor+ " preResD: "+preResD +"valResD: "+valResD);
+        } catch (Exception exp) { PopError("Error: "+ exp.getMessage()); }
     }
+
     public void CalRes() throws Exception{
-      if(hold==null)  throw new IllegalStateException("No Operator Selected");
+      if(hold==null)  throw new IllegalStateException("No Operation Performed");
         switch (hold) {
             case "+":
                 valResD = valPre + valFor;
