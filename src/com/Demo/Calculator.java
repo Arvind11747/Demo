@@ -50,23 +50,34 @@ public class Calculator extends Applet implements ActionListener {
     //Constructor
   public Calculator() { MainFrameWindows(); }
     public void MainFrameWindows() {
-       // Frame mainFrame =new Frame();
+       // Frame mainFrame =new Frame(); //thing under exp
         setLayout(new GridLayout(7, 3, 3, 3));
-
+        setSize(1000,1000);
         setBackground(Color.gray);
+        //Definition of Numerical Buttons
         buNum[0]=new Button("0");
         IntStream.range(1, buNum.length).forEach(i -> buNum[i] = new Button("" + i + ""));
 
+        //Font
+        Font buFon= new Font("Arial",Font.BOLD,18);
+        valueSum.setFont(buFon);
+        Arrays.stream(buNum).forEach(value -> value.setFont(buFon));
+        buAdd.setFont(buFon);
+        buSub.setFont(buFon);
+        buMul.setFont(buFon);
+        buDiv.setFont(buFon);
+        buRem.setFont(buFon);
+        buClear.setFont(buFon);
+        buEq.setFont(buFon);
+
+        //Add Buttons
         add(valueSum);
         valueSum.setEditable(false);
-
-
         add(buAdd);
         add(buSub);
         add(buMul);
         add(buDiv);
         add(buRem);
-        //Arrays.stream(buNum).forEach(this::add);
         IntStream.range(1,buNum.length).forEach((i->add(buNum[i])));
         add(buClear);
         add(buNum[0]);
@@ -74,7 +85,6 @@ public class Calculator extends Applet implements ActionListener {
 
         //Action Listeners
         Arrays.stream(buNum).forEach(button -> button.addActionListener(this));
-        ///IntStream.range(1,buNum.length).forEach((i->add(buNum[i])));
         buAdd.addActionListener(this);
         buSub.addActionListener(this);
         buMul.addActionListener(this);
